@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="example-wrapper">
+    <h1>{{ title }}</h1>
+
+    <p>{{ category.name }}</p>
+
+    <nav>
+        <p><a href="{{ path('app_category') }}">Retour à la liste</a></p>
+    </nav>
+</div>
+{% endblock %}
