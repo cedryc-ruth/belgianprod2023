@@ -69,4 +69,52 @@ class CategoryController extends AbstractController
             'title' => "Ajout d'une catégorie",
         ]);
     }
+
+    #[Route('/category/{id}/edit', name: 'app_category_edit', requirements : ['id' => "\d+"])]
+    public function edit(EntityManagerInterface $em, Request $request, int $id): Response
+    {
+        //Récupérer l'entité correspondante
+        $categoryRepo = $em->getRepository(Category::class);
+        $category = $categoryRepo->find($id);
+
+        //Créer le formulaire
+        $form = $this->createForm(CategoryType::class, $category);
+
+        $form->handleRequest($request);
+
+        //Traiter le formulaire
+        if($form->isSubmitted() && $form->isValid()) {
+            $category = $form->getData();
+
+            $em->persist($category);
+
+            $em->flush();
+
+            if($category->getId()) {
+                return $this->redirectToRoute('app_category');
+            } 
+        }
+
+        //Afficher le formulaire
+        return $this->render('category/edit.html.twig', [
+            'form' => $form,
+            'title' => "Modification d'une catégorie",
+        ]);
+    }
+
+    #[Route('/category/{id}', name: 'app_category_delete', requirements : ['id' => "\d+"], methods: ['DELETE'])]
+    public function delete(EntityManagerInterface $em, int $id): Response
+    {
+        //Récupérer la catégorie
+        $repository = $em->getRepository(Category::class);
+        $category = $repository->find($id);
+
+        //TODO CSRF token validation
+
+        //Supprimer la catégorie
+        $em->remove($category);
+        $em->flush();
+
+        //TODO redirect
+    }
 }

@@ -11,12 +11,9 @@
 <div class="example-wrapper">
     <h1>{{ title }}</h1>
 
-    <p>{{ category.name }} <span><a href="{{ path('app_category_edit', { "id": category.id }) }}">Modifier</a></span></p>
+   {{ form_start(form, {'method':'PUT'}) }}
+   {{ form_end(form) }}
 
-    <form action="{{ path('app_category_delete', {'id':category.id}) }}" method="post">
-        <input type="hidden" name="_method" value="DELETE">
-        <button>Supprimer</button>
-    </form>
     <nav>
         <p><a href="{{ path('app_category') }}">Retour à la liste</a></p>
     </nav>
