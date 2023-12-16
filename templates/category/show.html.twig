@@ -13,12 +13,21 @@
 
     <p>{{ category.name }} <span><a href="{{ path('app_category_edit', { "id": category.id }) }}">Modifier</a></span></p>
 
-    <form action="{{ path('app_category_delete', {'id':category.id}) }}" method="post">
-        <input type="hidden" name="_method" value="DELETE">
-        <button>Supprimer</button>
-    </form>
+    {{ include('category/_delete_form.html.twig') }}
+
+
+    {% for movie in category.movies %}
+        {{ dump(movie) }}
+    {% endfor %}
+
     <nav>
         <p><a href="{{ path('app_category') }}">Retour à la liste</a></p>
     </nav>
+
+    <div style="background-color:pink;color:red;">
+    {% for message in app.flashes('erreur') %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    </div>
 </div>
 {% endblock %}

@@ -27,7 +27,8 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/category/{id}', name: 'app_category_show', requirements : ['id' => "\d+"])]
+    #[Route('/category/{id}', name: 'app_category_show',
+         requirements : ['id' => "\d+"], methods: ['GET'])]
     public function show(EntityManagerInterface $em, int $id): Response
     {
         $repository = $em->getRepository(Category::class);
@@ -71,12 +72,8 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/category/{id}/edit', name: 'app_category_edit', requirements : ['id' => "\d+"])]
-    public function edit(EntityManagerInterface $em, Request $request, int $id): Response
+    public function edit(EntityManagerInterface $em, Request $request, Category $category): Response
     {
-        //Récupérer l'entité correspondante
-        $categoryRepo = $em->getRepository(Category::class);
-        $category = $categoryRepo->find($id);
-
         //Créer le formulaire
         $form = $this->createForm(CategoryType::class, $category);
 
@@ -102,19 +99,24 @@ class CategoryController extends AbstractController
         ]);
     }
 
-    #[Route('/category/{id}', name: 'app_category_delete', requirements : ['id' => "\d+"], methods: ['DELETE'])]
-    public function delete(EntityManagerInterface $em, int $id): Response
+    #[Route('/category/{id}', name: 'app_category_delete',
+         requirements : ['id' => "\d+"], methods: ['POST'])]
+    public function delete(EntityManagerInterface $em, Category $category, Request $request): Response
     {
-        //Récupérer la catégorie
-        $repository = $em->getRepository(Category::class);
-        $category = $repository->find($id);
+        if($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+            //Supprimer la catégorie
+            $em->remove($category);
+            $em->flush();
 
-        //TODO CSRF token validation
+            return $this->redirectToRoute('app_category');
+        }
 
-        //Supprimer la catégorie
-        $em->remove($category);
-        $em->flush();
+        //Afficher un message d'erreur
+        $this->addFlash('erreur','Suppression interdite (token invalide).');
 
-        //TODO redirect
+        return $this->render('category/show.html.twig', [
+            'title' => 'Fiche catégorie',
+            'category' => $category,
+        ]);
     }
 }

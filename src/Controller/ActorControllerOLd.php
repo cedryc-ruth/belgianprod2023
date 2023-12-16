@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Actor;
 
-class ActorController extends AbstractController
+class ActorControllerOLd extends AbstractController
 {
     #[Route('/actor', name: 'app_actor')]
     public function index(EntityManagerInterface $em): Response
