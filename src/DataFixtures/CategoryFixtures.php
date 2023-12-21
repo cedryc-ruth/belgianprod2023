@@ -17,6 +17,8 @@ class CategoryFixtures extends Fixture
             ['name'=>'Comédie'],
             ['name'=>'Romance'],
             ['name'=>'Horreur'],
+            ['name'=>'Action'],
+            ['name'=>'Science-Fiction'],
         ];
 
         foreach($data as $row) {
@@ -24,6 +26,9 @@ class CategoryFixtures extends Fixture
             $cat->setName($row['name']);
 
             $manager->persist($cat);
+
+            //Sauvegarde de la référence pour utiliser dans une fixture dépendante
+            $this->addReference($row['name'], $cat);
         }      
 
         $manager->flush();

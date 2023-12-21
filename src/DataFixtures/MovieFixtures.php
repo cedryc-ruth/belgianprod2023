@@ -6,8 +6,9 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use App\Entity\Movie;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 
-class MovieFixtures extends Fixture
+class MovieFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -16,10 +17,18 @@ class MovieFixtures extends Fixture
               'title' => 'Die Hard',
               'slug' => 'die-hard',
               'description' => 'Action movie in a tower.',
-              'duration' => 120,
-              'director' => 'DD',
-              'category_id' => 6,
+              'duration' => 132,
+              'director' => 'John McTiernan',
+              'category_ref' => 'Action',
             ],
+            [
+                'title' => 'Blade Runner',
+                'slug' => 'blade-runner',
+                'description' => 'Sci-fi noir movie.',
+                'duration' => 117,
+                'director' => 'Ridley Scott',
+                'category_ref' => 'Science-Fiction',
+              ],
         ];
 
         foreach($data as $row) {
@@ -30,24 +39,19 @@ class MovieFixtures extends Fixture
             $movie->setDuration($row['duration']);
             $movie->setDirector($row['director']);
 
-            //Récupérer la catégorie
-            /*
-            $repo = $em->getRepository(Category::class);
-            $category = $repo->find($row['category_id']);
-
-            $movie->setCategory($category);
-        dump($movie);die;
-
-            /!\ Impossible d'injecter EntityManagerInterface
-            => Utiliser les système de dépendance des Fixtures
-            => pour obtenir une référence de la catégorie
-
-            https://symfony.com/bundles/DoctrineFixturesBundle/current/index.html#splitting-fixtures-into-separate-files
-            */
+            //Récupérer la référence à la catégorie
+            $movie->setCategory($this->getReference($row['category_ref']));
 
             $manager->persist($movie);
         }
 
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return [
+            CategoryFixtures::class,
+        ];
     }
 }
